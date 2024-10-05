@@ -27,7 +27,11 @@ func main() {
 		})
 	})
 	router.GET("/", func(c *gin.Context) {
-		c.HTML(200, "index.html", gin.H{})
+		c.HTML(200, "index.html", gin.H{
+			"title":       "Main website",
+			"total_users": len(users),
+			"users":       users,
+		})
 	})
 	//API URLs
 	router.GET("/api/users", func(c *gin.Context) {
