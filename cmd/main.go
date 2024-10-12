@@ -18,8 +18,8 @@ func main() {
 	router := gin.Default()
 	users := []User{}
 	indexUser := 1
-	fmt.Println("Running App")
-	//Tomar archivos de la carpeta templates
+	fmt.Println("Running app")
+	// Tomar archivos de la carpeta template
 	router.LoadHTMLGlob("templates/*")
 	router.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
@@ -30,13 +30,15 @@ func main() {
 		c.HTML(200, "index.html", gin.H{
 			"title":       "Main website",
 			"total_users": len(users),
-			"users":       users,
+			"users":       []User{},
 		})
 	})
-	//API URLs
+	// API URLs
+	//Obtener usuarios
 	router.GET("/api/users", func(c *gin.Context) {
 		c.JSON(200, users)
 	})
+	//Creación de usuarios
 	router.POST("/api/users", func(c *gin.Context) {
 		var user User
 		if c.BindJSON(&user) == nil {
@@ -46,11 +48,11 @@ func main() {
 			c.JSON(200, user)
 		} else {
 			c.JSON(400, gin.H{
-				"error": "invalid payload",
+				"error": "Invalid payload",
 			})
 		}
 	})
-	//Eliminacion de usuarios
+	//Eliminación de usuarios
 	router.DELETE("/api/users/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		idParsed, err := strconv.Atoi(id)
@@ -63,7 +65,7 @@ func main() {
 		fmt.Println("Id a borrar: ", id)
 		for i, user := range users {
 			if user.Id == idParsed {
-				users = append(users[:1], users[i+1:]...)
+				users = append(users[:i], users[i+1:]...)
 				c.JSON(200, gin.H{
 					"message": "User Deleted",
 				})
@@ -72,7 +74,7 @@ func main() {
 		}
 		c.JSON(201, gin.H{})
 	})
-	//Actualizar usuarios
+	//ACtualizar usuarios
 	router.PUT("/api/users/:id", func(c *gin.Context) {
 		id := c.Param("id")
 		idParsed, err := strconv.Atoi(id)
@@ -86,11 +88,11 @@ func main() {
 		err = c.BindJSON(&user)
 		if err != nil {
 			c.JSON(400, gin.H{
-				"error": "Invalid Payload",
+				"error": "Invalid payload",
 			})
 			return
 		}
-		fmt.Println("Id a actualizar", id)
+		fmt.Println("Id a actualizar: ", id)
 		for i, u := range users {
 			if u.Id == idParsed {
 				users[i] = user
